@@ -38,9 +38,24 @@ btnJoinBroadcaster.onclick = function () {
     divSelectRoom.style = "display: none;";
     divConsultingRoom.style = "display: block;";
     broadcasterName.innerText = user.name + " is broadcasting...";
-    videoElement.src = "my_video.mp4";
-    socket.emit("register as broadcaster", user.room);
-    videoElement.id ='myvideo';
+    //videoElement.src = "my_video.mp4";
+    //videoElement.src = "file:///Users/vishwanathkulkarni/Documents/Colorado/Independent_study_2/webrtc-web/webrtc-video-conference-tutorial/public/bbb_sunflower_2160p_30fps_normal.mp4"
+    //socket.emit("register as broadcaster", user.room);
+    //videoElement.id ='myvideo';
+
+    const input = document.querySelector('#video-url-example');
+      
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      const url = URL.createObjectURL(file);
+
+      // document.querySelector('#video-container').innerHTML = `
+      //   <video autoplay loop width="500" src="${url}" />
+      // `;
+      videoElement.src = url;
+      socket.emit("register as broadcaster", user.room);
+      videoElement.id ='myvideo';
+    });
 
     //testing
     // creating the MediaSource, just with the "new" keyword, and the URL for it
