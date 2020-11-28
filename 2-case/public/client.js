@@ -81,8 +81,8 @@ btnJoinBroadcaster.onclick = function () {
     const fps = 0;
     if (videoElement.mozCaptureStream) {
       stream1 = videoElement.mozCaptureStream(fps);
-    } else if (videoElement.mozCaptureStream) {
-      stream1 = videoElement.mozCaptureStream(fps);
+    } else if (videoElement.captureStream) {
+      stream1 = videoElement.captureStream(fps);
     } else {
       console.error('Stream capture is not supported');
       stream1 = null;

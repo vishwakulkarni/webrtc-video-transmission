@@ -54,9 +54,9 @@ const input = document.querySelector('#video-url-example');
         const fps = 0;
         if (localVideo.mozCaptureStream) {
           localStream = localVideo.mozCaptureStream(fps);
-        } else if (localVideo.mozCaptureStream) {
-          localStream = localVideo.mozCaptureStream(fps);
-        } else {
+        }  else if (videoElement.captureStream) {
+            stream1 = videoElement.captureStream(fps);
+          } else {
           console.error('Stream capture is not supported');
           localStream = null;
         }
