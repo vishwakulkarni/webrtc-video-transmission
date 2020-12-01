@@ -1,24 +1,15 @@
 <!DOCTYPE html>
-
 <head>
-    <title>WebRTC Multipath (ISL lab)</title>
+    <title>WebRTC Video Conference Tutorial - Plain WebRTC</title>
 </head>
-
 <body>
-    <h1>WebRTC Multipath (ISL lab)</h1>
+    <h1>WebRTC Video Conference Tutorial - Plain WebRTC</h1>
 
     <div id="selectRoom">
-        <label for="name">Type your Name</label>
-        <input id="name" type="text" />
-        <label for="roomNumber">Type the room number</label>
+        <label>Type the room number</label>
         <input id="roomNumber" type="text" />
-        <button id="joinBroadcaster">Join as Broadcaster</button>
-        <button id="joinViewer">Join as Viewer</button>
+        <button id="goRoom">Go</button>
     </div>
-
-    <div id="consultingRoom" style="display:none">
-
-
 
     Add a video here:
     <br>
@@ -26,9 +17,10 @@
     <br>
     ..and it will playback here, without any upload:
     <br>
-        <video autoplay></video>
-        <p id="broadcasterName"></p>
-        <ul id="viewers"></ul>
+
+    <div id="consultingRoom" style="display:none">
+        <video id="localVideo" autoplay></video>
+        <video id="remoteVideo" autoplay></video>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
