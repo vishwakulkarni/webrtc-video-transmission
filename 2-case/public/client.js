@@ -15,10 +15,15 @@ let rtcPeerConnections = {};
 
 // constants
 const iceServers = {
-  iceServers: [
-    { urls: "stun:stun.services.mozilla.com" },
-    { urls: "stun:stun.l.google.com:19302" },
-  ],
+  'iceServers': [
+      { 'urls': 'stun:stun.services.mozilla.com' },
+      { 'urls': 'stun:stun.l.google.com:19302' },
+      {
+          'urls': 'turn:128.105.145.60:3478?transport=udp',
+          'credential': 'test123',
+          'username': 'test'
+        }
+  ]
 };
 const streamConstraints = { audio: false, video: { height: 480 } };
 
