@@ -1,10 +1,12 @@
 // getting dom elements
 var divSelectRoom = document.getElementById("selectRoom");
+var divAddVide = document.getElementById('addVideo');
 var divConsultingRoom = document.getElementById("consultingRoom");
 var inputRoomNumber = document.getElementById("roomNumber");
 var btnGoRoom = document.getElementById("goRoom");
 var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
+var userType = document.getElementById("user");
 
 // variables
 var fromCaller = false;
@@ -65,6 +67,7 @@ const input = document.querySelector('#video-url-example');
         }
         if(fromReceiver){
             socket.emit('ready', roomNumber);
+            divAddVide.style = "display: none;";
         }
         
         //rightVideo.srcObject = stream;
@@ -92,6 +95,8 @@ socket.on('joined', function (room) {
     // }).catch(function (err) {
     //     console.log('An error ocurred when accessing media devices', err);
     // });
+    divAddVide.style = "display: none;";
+    socket.emit('ready', roomNumber);
 });
 
 socket.on('candidate', function (event) {
@@ -129,8 +134,9 @@ socket.on('offer', function (event) {
         rtcPeerConnection = new RTCPeerConnection(iceServers);
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
-        rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
-        rtcPeerConnection.addTrack(localStream.getTracks()[1], localStream);
+        //rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
+        //rtcPeerConnection.addTrack(localStream.getTracks()[1], localStream);
+        
         rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
         rtcPeerConnection.createAnswer()
             .then(sessionDescription => {
