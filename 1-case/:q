@@ -5,25 +5,27 @@ var inputRoomNumber = document.getElementById("roomNumber");
 var btnGoRoom = document.getElementById("goRoom");
 var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
+let h2CallName = document.getElementById("callName")
+let inputCallName = document.getElementById("inputCallName")
+let btnSetName = document.getElementById("setName")
 
 // variables
-var fromCaller = false;
-var fromReceiver = false;
 var roomNumber;
 var localStream;
 var remoteStream;
 var rtcPeerConnection;
+let dataChannel;
 var iceServers = {
     'iceServers': [
-       // { 'urls': 'stun:stun.services.mozilla.com' },
-     //   { 'urls': 'stun:stun.l.google.com:19302' }
-	{
+        //{ 'urls': 'stun:stun.services.mozilla.com' },
+        //{ 'urls': 'stun:stun.l.google.com:19302' }
+         {
              'urls': 'turn:128.105.145.60:3478?transport=udp',
              'credential': 'test123',
              'username': 'test'
            }
     ]
-}
+};
 var streamConstraints = { audio: true, video: true };
 var isCaller;
 
@@ -41,62 +43,34 @@ btnGoRoom.onclick = function () {
     }
 };
 
-const input = document.querySelector('#video-url-example');
-      
-    input.addEventListener('change', () => {
-      const file = input.files[0];
-      const url = URL.createObjectURL(file);
-
-      // document.querySelector('#video-container').innerHTML = `
-      //   <video autoplay loop width="500" src="${url}" />
-      // `;
-      localVideo.src = url;
-      //socket.emit("register as broadcaster", user.room);
-      //videoElement.id ='myvideo';
-    });
-
-    localVideo.addEventListener('canplay', () => {
-        const fps = 0;
-        if (localVideo.mozCaptureStream) {
-          localStream = localVideo.mozCaptureStream(fps);
-        }  else if (localVideo.captureStream) {
-            localStream = localVideo.captureStream(fps);
-          } else {
-          console.error('Stream capture is not supported');
-          localStream = null;
-        }
-        if(fromCaller){
-            isCaller = true;
-        }
-        if(fromReceiver){
-            socket.emit('ready', roomNumber);
-        }
-        
-        //rightVideo.srcObject = stream;
-      });
+btnSetName.onclick = () => {
+    if (inputCallName.value === '') {
+        alert("Please type a name")
+    } else {
+        dataChannel.send(inputCallName.value)
+        h2CallName.innerText = inputCallName.value
+    }
+}
 
 // message handlers
 socket.on('created', function (room) {
-    fromCaller = true;
-
-    // navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
-    //     localStream = stream;
-    //     localVideo.srcObject = stream;
-    //     isCaller = true;
-    // }).catch(function (err) {
-    //     console.log('An error ocurred when accessing media devices', err);
-    // });
+    navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
+        localStream = stream;
+        localVideo.srcObject = stream;
+        isCaller = true;
+    }).catch(function (err) {
+        console.log('An error ocurred when accessing media devices', err);
+    });
 });
 
 socket.on('joined', function (room) {
-    fromReceiver = true;
-    // navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
-    //     localStream = stream;
-    //     localVideo.srcObject = stream;
-    //     socket.emit('ready', roomNumber);
-    // }).catch(function (err) {
-    //     console.log('An error ocurred when accessing media devices', err);
-    // });
+    navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
+        localStream = stream;
+        localVideo.srcObject = stream;
+        socket.emit('ready', roomNumber);
+    }).catch(function (err) {
+        console.log('An error ocurred when accessing media devices', err);
+    });
 });
 
 socket.on('candidate', function (event) {
@@ -114,6 +88,8 @@ socket.on('ready', function () {
         rtcPeerConnection.ontrack = onAddStream;
         rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
         rtcPeerConnection.addTrack(localStream.getTracks()[1], localStream);
+        dataChannel = rtcPeerConnection.createDataChannel(roomNumber)
+        dataChannel.onmessage = event => { h2CallName.innerText = event.data }
         rtcPeerConnection.createOffer()
             .then(sessionDescription => {
                 rtcPeerConnection.setLocalDescription(sessionDescription);
@@ -148,7 +124,11 @@ socket.on('offer', function (event) {
             })
             .catch(error => {
                 console.log(error)
-            })
+            });
+        rtcPeerConnection.ondatachannel = event => {
+            dataChannel = event.channel
+            dataChannel.onmessage = event => { h2CallName.innerText = event.data }
+        }
     }
 });
 
